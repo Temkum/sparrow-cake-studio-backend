@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -6,6 +7,7 @@ import morgan from 'morgan';
 import { errorHandler } from './middleware/error';
 import cakeRoutes from './routes';
 import { logger } from './utils/logger';
+import healthRoutes from './routes/health.route';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,7 +18,7 @@ app.use(compression());
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.get('/health', (_, res) => res.status(200).json({ status: 'ok' }));
+app.use('/health', healthRoutes);
 
 app.use('/api/cakes', cakeRoutes);
 
