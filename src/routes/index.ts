@@ -3,8 +3,10 @@ import * as controller from '../controllers/cake.controller';
 
 const router = Router();
 
-router.get('/', controller.getAllCakes);
-router.get('/:id', controller.getCakeById);
-router.post('/', controller.createCake);
+router.get('/', controller.getAll);
+router.get('/:id', controller.getById);
+router.post('/', controller.create);
+router.patch('/:id', controller.update);
+router.delete('/:id', controller.remove);
 
 export default router;

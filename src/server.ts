@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import { errorHandler } from './middleware/error';
-import cakeRoutes from './routes/cake.routes';
+import cakeRoutes from './routes';
 import { logger } from './utils/logger';
 
 const app = express();
