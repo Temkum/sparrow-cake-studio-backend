@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { cakes } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
 import { z } from 'zod';
 
 const cakeSchema = z.object({
@@ -11,8 +11,11 @@ const cakeSchema = z.object({
   imageUrl: z.string().url().optional(),
 });
 
-export const getAllCakes = async () => {
-  return db.select().from(cakes).execute();
+export const getAllCakes = async (page = 1, limit = 10) => {
+  const offset = (page - 1) * limit;
+  const data = await db.select().from(cakes).limit(limit).offset(offset).all();
+  const total = await db.select({ count: count() }).from(cakes).all();
+  return { data, total: total[0].count, page, limit };
 };
 
 export const getCakeById = async (id: string) => {
