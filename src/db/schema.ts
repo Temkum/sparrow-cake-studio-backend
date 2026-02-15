@@ -39,6 +39,7 @@ export const orders = pgTable('orders', {
   quantity: integer('quantity').notNull().default(1),
   status: statusEnum('status').default('pending').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const cakesRelations = relations(cakes, ({ many }) => ({
