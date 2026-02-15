@@ -13,9 +13,9 @@ const cakeSchema = z.object({
 
 export const getAllCakes = async (page = 1, limit = 10) => {
   const offset = (page - 1) * limit;
-  const data = await db.select().from(cakes).limit(limit).offset(offset).all();
-  const total = await db.select({ count: count() }).from(cakes).all();
-  return { data, total: total[0].count, page, limit };
+  const data = await db.select().from(cakes).limit(limit).offset(offset);
+  const total = await db.select({ count: count() }).from(cakes);
+  return { data, total: total[0]?.count ?? 0, page, limit };
 };
 
 export const getCakeById = async (id: string) => {

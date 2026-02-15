@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { reviews } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
 
 const reviewSchema = z.object({
@@ -12,7 +12,7 @@ const reviewSchema = z.object({
 });
 
 export const getAllReviews = async () => {
-  return db.select().from(reviews).orderBy(reviews.date.desc).all();
+  return await db.select().from(reviews).orderBy(desc(reviews.date));
 };
 
 export const getReviewById = async (id: string) => {

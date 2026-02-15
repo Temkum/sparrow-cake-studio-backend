@@ -16,7 +16,11 @@ export const getById = async (
   next: NextFunction,
 ) => {
   try {
-    const review = await service.getReviewById(req.params.id);
+    const id = typeof req.params.id === 'string' ? req.params.id : undefined;
+    if (!id) {
+      return res.status(400).json({ error: 'Invalid id' });
+    }
+    const review = await service.getReviewById(id);
     if (!review) return res.status(404).json({ error: 'Review not found' });
     res.json(review);
   } catch (err) {
@@ -43,7 +47,12 @@ export const update = async (
   next: NextFunction,
 ) => {
   try {
-    const review = await service.updateReview(req.params.id, req.body);
+    const id = typeof req.params.id === 'string' ? req.params.id : undefined;
+    if (!id) {
+      return res.status(400).json({ error: 'Invalid id' });
+    }
+    const review = await service.updateReview(id, req.body);
+
     if (!review) return res.status(404).json({ error: 'Review not found' });
     res.json(review);
   } catch (err) {
@@ -57,7 +66,11 @@ export const remove = async (
   next: NextFunction,
 ) => {
   try {
-    const deleted = await service.deleteReview(req.params.id);
+    const id = typeof req.params.id === 'string' ? req.params.id : undefined;
+    if (!id) {
+      return res.status(400).json({ error: 'Invalid id' });
+    }
+    const deleted = await service.deleteReview(id);
     if (!deleted) return res.status(404).json({ error: 'Review not found' });
     res.status(204).send();
   } catch (err) {
