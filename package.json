@@ -12,6 +12,7 @@
     "migrate": "drizzle-kit generate && drizzle-kit migrate",
     "push": "drizzle-kit push",
     "studio": "drizzle-kit studio",
+    "seed": "tsx src/db/seed.ts",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -19,6 +20,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
     "drizzle-kit": "^0.31.9",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
@@ -35,6 +37,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "@types/compression": "^1.8.1",
     "@types/morgan": "^1.9.10",
+    "cloudinary": "^2.9.0",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
@@ -43,6 +46,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
+    "multer": "^2.0.2",
     "winston": "^3.19.0",
     "zod": "^4.3.6"
   }

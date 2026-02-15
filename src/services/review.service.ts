@@ -8,11 +8,19 @@ const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   date: z.string().pipe(z.coerce.date()),
   comment: z.string().min(10),
-  avatar: z.string().url().optional(),
+  avatar: z.url().optional(),
 });
 
-export const getAllReviews = async () => {
-  return await db.select().from(reviews).orderBy(desc(reviews.date));
+export const getAllReviews = async (page = 1, limit = 5) => {
+  const offset = (page - 1) * limit;
+  const data = await db
+    .select()
+    .from(reviews)
+    .orderBy(desc(reviews.date))
+    .limit(limit)
+    .offset(offset);
+
+  return data;
 };
 
 export const getReviewById = async (id: string) => {
