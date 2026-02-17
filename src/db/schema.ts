@@ -96,3 +96,11 @@ export const reviews = pgTable(
     ),
   }),
 );
+
+export const uploadedAssets = pgTable('uploaded_assets', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  hash: text('hash').notNull().unique(),
+  url: text('url').notNull(),
+  publicId: text('public_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

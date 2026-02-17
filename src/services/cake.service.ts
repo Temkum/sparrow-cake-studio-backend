@@ -3,11 +3,12 @@ import { cakes } from '../db/schema';
 import { eq, count } from 'drizzle-orm';
 import { z } from 'zod';
 import cloudinary from '../utils/cloudinary';
+import { uploadImage } from './upload.service';
 
 const cakeSchema = z.object({
   name: z.string().min(3),
   description: z.string().optional(),
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/), // string for numeric precision
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/),
   category: z.string().min(1),
   imageUrl: z.string().url().optional(),
 });
@@ -27,25 +28,11 @@ export const getCakeById = async (id: string) => {
 export const createCake = async (data: unknown, file?: Express.Multer.File) => {
   const validated = cakeSchema.parse(data);
 
-  let imageUrl: string | undefined;
+  let imageUrl = validated.imageUrl;
 
   if (file) {
-    try {
-      const result = await new Promise<any>((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'cakesbysparrow/cakes',
-            resource_type: 'image',
-            allowed_formats: ['jpg', 'png', 'webp'],
-          },
-          (error, result) => (error ? reject(error) : resolve(result)),
-        );
-        uploadStream.end(file.buffer);
-      });
-      imageUrl = result.secure_url;
-    } catch (err: any) {
-      throw new Error(`Cloudinary upload failed: ${err.message}`);
-    }
+    const { url } = await uploadImage(file, 'cakesbysparrow/cakes');
+    imageUrl = url;
   }
 
   const [newCake] = await db
@@ -63,33 +50,16 @@ export const updateCake = async (
 ) => {
   const validated = cakeSchema.partial().parse(data);
 
-  let imageUrl: string | undefined;
+  let imageUrl = validated.imageUrl;
 
   if (file) {
-    try {
-      const result = await new Promise<any>((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'cakesbysparrow/cakes',
-            resource_type: 'image',
-            allowed_formats: ['jpg', 'png', 'webp'],
-          },
-          (error, result) => (error ? reject(error) : resolve(result)),
-        );
-        uploadStream.end(file.buffer);
-      });
-      imageUrl = result.secure_url;
-    } catch (err: any) {
-      throw new Error(`Cloudinary upload failed: ${err.message}`);
-    }
+    const { url } = await uploadImage(file, 'cakesbysparrow/cakes');
+    imageUrl = url;
   }
-
-  const updateData: any = { ...validated, updatedAt: new Date() };
-  if (imageUrl) updateData.imageUrl = imageUrl;
 
   const [updated] = await db
     .update(cakes)
-    .set(updateData)
+    .set({ ...validated, ...(imageUrl && { imageUrl }), updatedAt: new Date() })
     .where(eq(cakes.id, id))
     .returning();
 
@@ -104,13 +74,21 @@ export const deleteCake = async (id: string) => {
   if (!cake) throw new Error('Cake not found');
 
   if (cake.imageUrl) {
-    const publicId = cake.imageUrl.split('/').pop()?.split('.')[0];
-    if (publicId) {
+    // extract public_id from full Cloudinary URL correctly
+    // URL format: https://res.cloudinary.com/<cloud>/image/upload/v<version>/<public_id>.<ext>
+    const urlParts = cake.imageUrl.split('/upload/');
+    if (urlParts[1]) {
+      const publicId = urlParts[1]
+        .replace(/^v\d+\//, '') // strip version prefix e.g. v1234567890/
+        .replace(/\.[^.]+$/, ''); // strip file extension
+
       try {
-        await cloudinary.uploader.destroy(`cakesbysparrow/cakes/${publicId}`);
-      } catch (err: any) {
-        console.error('Cloudinary delete failed:', err.message);
-        // continue deletion even if image delete fails
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error(
+          'Cloudinary delete failed:',
+          err instanceof Error ? err.message : err,
+        );
       }
     }
   }
