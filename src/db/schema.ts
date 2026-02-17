@@ -78,7 +78,6 @@ export const reviews = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').notNull(),
     rating: integer('rating').notNull(),
-    date: timestamp('date', { mode: 'date' }).notNull(),
     comment: text('comment').notNull(),
     avatar: text('avatar'),
     displayReview: boolean('display_review').default(true),
@@ -87,14 +86,13 @@ export const reviews = pgTable(
   },
   (table) => ({
     ratingIdx: index('reviews_rating_idx').on(table.rating),
-    dateIdx: index('reviews_date_idx').on(table.date),
     displayReviewIdx: index('reviews_display_review_idx').on(
       table.displayReview,
     ),
     // For displaying newest approved reviews
     displayDateIdx: index('reviews_display_date_idx').on(
       table.displayReview,
-      table.date.desc(),
+      table.createdAt.desc(),
     ),
   }),
 );

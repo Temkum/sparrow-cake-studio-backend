@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import * as service from '../services/cake.service';
+import { logger } from '../utils/logger';
 
 export const getAll = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const cakes = await service.getAllCakes();
     res.json(cakes);
   } catch (err) {
+    logger.error('Failed to get all cakes', { error: err });
     next(err);
   }
 };
@@ -17,7 +19,7 @@ export const getAll = async (
 export const getById = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const id = typeof req.params.id === 'string' ? req.params.id : undefined;
@@ -29,6 +31,7 @@ export const getById = async (
       return res.status(404).json({ error: true, message: 'Cake not found' });
     res.json(cake);
   } catch (err) {
+    logger.error('Failed to get cake', { error: err });
     next(err);
   }
 };
@@ -36,12 +39,14 @@ export const getById = async (
 export const create = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
-    const cake = await service.createCake(req.body);
+    const cake = await service.createCake(req.body, req.file);
+
     res.status(201).json(cake);
   } catch (err) {
+    logger.error('Failed to create cake', { error: err });
     next(err);
   }
 };
@@ -49,7 +54,7 @@ export const create = async (
 export const update = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const id = typeof req.params.id === 'string' ? req.params.id : undefined;
@@ -61,6 +66,7 @@ export const update = async (
       return res.status(404).json({ error: true, message: 'Cake not found' });
     res.json(cake);
   } catch (err) {
+    logger.error('Failed to update cake', { error: err });
     next(err);
   }
 };
@@ -68,7 +74,7 @@ export const update = async (
 export const remove = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const id = typeof req.params.id === 'string' ? req.params.id : undefined;
@@ -80,6 +86,7 @@ export const remove = async (
       return res.status(404).json({ error: true, message: 'Cake not found' });
     res.status(204).send();
   } catch (err) {
+    logger.error('Failed to delete cake', { error: err });
     next(err);
   }
 };
