@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { reviews } from '../db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, count } from 'drizzle-orm';
 import { z } from 'zod';
 
 const reviewSchema = z.object({
@@ -25,7 +25,8 @@ export const getAllReviews = async (page = 1, limit = 10) => {
     .limit(limit)
     .offset(offset);
 
-  return data;
+  const total = await db.select({ count: count() }).from(reviews);
+  return { data, total: total[0]?.count ?? 0, page, limit };
 };
 
 export const getReviewById = async (id: string) => {
