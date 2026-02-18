@@ -15,7 +15,7 @@ export const getAll = async (_: Request, res: Response, next: NextFunction) => {
 export const getById = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const id = typeof req.params.id === 'string' ? req.params.id : undefined;
@@ -34,7 +34,7 @@ export const getById = async (
 export const create = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     if (!req.body || typeof req.body !== 'object') {
@@ -69,7 +69,7 @@ export const create = async (
 export const update = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const id = typeof req.params.id === 'string' ? req.params.id : undefined;
@@ -89,7 +89,7 @@ export const update = async (
 export const remove = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const id = typeof req.params.id === 'string' ? req.params.id : undefined;
